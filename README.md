@@ -3,7 +3,7 @@ This plugin is literally just a bash terminal and the ability to run the bash co
 through Gimp in this GEGL plugin then apply more GEGL syntax after ward. 
 
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/cf82c7b2-4ff1-42ea-bff5-6ba1b248ce21)
-
+I shouldn't have to say this but it looks like Windows XP because of a Linux theme. Moving on...
 
 
 ## Quick guide to plugin:
