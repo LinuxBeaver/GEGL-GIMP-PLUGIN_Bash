@@ -14,7 +14,6 @@ through Gimp in this GEGL plugin then apply more GEGL syntax after ward.
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/a370214f-d9d4-4db5-b622-dd93fc48c10d)
 
 
-
 I shouldn't have to say this but it looks like Windows XP because of a Linux theme. Moving on...
 
 
@@ -44,7 +43,7 @@ and call the final result "/tmp/out.png" so use those two lines in your bash str
  
 THIS PLUGIN DOES NOT WORK ON WINDOWS OR FLATPAK LINUX AS THAT CAN'T CALL BASH
 
-Then restart Gimp and go to GEGL operation and look for "Bash Plugin"
+Then restart Gimp and go to GEGL operation drop down list and look for "Bash Plugin" or "GEGL Effects Continual" and go to the 9th tab named "Run a bash command on Linux"
 
 
 ## Compiling and Installing
