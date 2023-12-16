@@ -1,6 +1,7 @@
 ## Call AI (or anything external) In Gimp using bash plugin
 This plugin is literally just a bash terminal and the ability to run the bash command with a checkbox going on and off. If you have AI's installed (like REMBG, GFPGAN, ect... that means you can run the
 through Gimp in this GEGL plugin then apply more GEGL syntax after ward. 
+
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/cf82c7b2-4ff1-42ea-bff5-6ba1b248ce21)
 
 
