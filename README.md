@@ -24,7 +24,7 @@ and call the final result "/tmp/out.png"
 
 ## Location to put binaries (they don't go in the normal plugins folder)
 
-** Linux** 
+**Linux** 
 
  /home/(USERNAME)/.local/share/gegl-0.4/plug-ins
  
@@ -34,6 +34,8 @@ Then restart Gimp and go to GEGL operation and look for "Bash Plugin"
 
 
 ## Compiling and Installing
+
+Click the build all button to compile everything but you can also read here how to compile individual files.
 
 ### Linux
 
