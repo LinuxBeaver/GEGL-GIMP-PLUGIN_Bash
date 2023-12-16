@@ -3,6 +3,13 @@ This plugin is literally just a bash terminal and the ability to run the bash co
 through Gimp in this GEGL plugin then apply more GEGL syntax after ward. 
 
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/cf82c7b2-4ff1-42ea-bff5-6ba1b248ce21)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/4d585743-106f-423a-b611-23a7c2b0784c)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/a370214f-d9d4-4db5-b622-dd93fc48c10d)
+
+
+
 I shouldn't have to say this but it looks like Windows XP because of a Linux theme. Moving on...
 
 
@@ -57,6 +64,23 @@ BEAVER RECOMMENDS YOU USE A MODERN VERSION OF GEGL. NO GUARANTEE DATED VERSIONS 
 ### Windows
 
 This plugin cannot work on Windows because it calls native Linux bash. Windows Sub System for Linux version may come soon but as of now it is not avalible. 
+
+## More previews of this based Plugin
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/caa43b3a-7c82-443c-b62f-5279e621c625)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/b35a8ebc-0b7f-44ff-bc31-9b4047b0e889)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/fa7cf60d-e8e1-4e48-bf75-eeaeaee67643)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/561db502-6a7e-43fa-9545-d794b904360d)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/0335019d-02f9-4175-a917-2ff95a0398a7)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/da2b84a9-5ecf-4800-9f54-ad32f7b172ed)
+
+
+
 
 
 
