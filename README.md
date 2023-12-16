@@ -7,11 +7,17 @@ https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/blob/main/AI_BASH
 This plugin is literally just a bash terminal and the ability to run the bash command with a checkbox going on and off. If you have AI's installed (like REMBG, GFPGAN, ect... that means you can run the
 through Gimp in this GEGL plugin then apply more GEGL syntax after ward. 
 
-## Below are 3 images
+## Images
+
+REMBG + GEGL's Outline ability
 
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/cf82c7b2-4ff1-42ea-bff5-6ba1b248ce21)
 
+REMBG, GFPGAN, GMIC and GEGL together
+
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/4d585743-106f-423a-b611-23a7c2b0784c)
+
+GEGL (outside of Gimp) followed by AI background removal and GEGL inside Gimp. 
 
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/a370214f-d9d4-4db5-b622-dd93fc48c10d)
 
