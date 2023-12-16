@@ -1,3 +1,8 @@
+A special build of my GEGL Layer Effects engine that uses this plugin internally on its 9th tab "Run a bash command on Linux" can be downloaded here and the same rules apply. This plugin works as both a stand alone and a tool inside a special build of GEGL Effects.
+
+https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/blob/main/AI_BASH_GEGL_EFFECTS_Linux_only_binaries_code.zip
+
+
 ## Call AI (or anything external) In Gimp using bash plugin
 This plugin is literally just a bash terminal and the ability to run the bash command with a checkbox going on and off. If you have AI's installed (like REMBG, GFPGAN, ect... that means you can run the
 through Gimp in this GEGL plugin then apply more GEGL syntax after ward. 
