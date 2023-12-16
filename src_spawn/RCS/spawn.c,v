@@ -1,0 +1,547 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2023.12.04.12.35.18;	author lee;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2023.12.04.12.30.55;	author lee;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2023.12.04.07.24.27;	author lee;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2023.11.28.01.36.39;	author lee;	state Exp;
+branches;
+next	;
+
+
+desc
+@works, in that it calls system().
+@
+
+
+1.4
+log
+@without debugging messages
+@
+text
+@/* This file is an image processing operation for GEGL
+ *
+ * GEGL is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * GEGL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with GEGL; if not, see <https://www.gnu.org/licenses/>.
+ *
+ * Copyright 2006 Øyvind Kolås <pippin@@gimp.org>
+ * 2023 demiboy/barefootliam, Liam Quin, liam at fromoldbooks dot org
+ */
+
+/* Spawn an external process given as pipeline property
+ * Give it the input as standard input,
+ * or as a named file via the path-in property
+ * Read its output via the path-result property
+ */
+
+#include "config.h"
+#include <glib/gi18n-lib.h>
+
+#ifdef GEGL_PROPERTIES
+
+property_file_path  (path_in, _("Temporary filename for pipeline to read"), NULL)
+    description  (_("Full path to a file that will be created containing the image for the pipeline to process"))
+
+property_file_path  (path_out, _("Temporary filename for pipeline to create"), NULL)
+    description  (_("The pipeline should create this file and leave an image in it, in the same format as the input file"))
+
+property_string  (pipeline, _("An external system command to run"), NULL)
+    description  (_("Pipeline to run with bash. Beware of filenames with spaces and of special characters."))
+
+#else
+
+#define GEGL_OP_AREA_FILTER
+#define GEGL_OP_NAME     spawn
+#define GEGL_OP_C_SOURCE spawn.c
+
+#include "gegl-op.h"
+#ifndef STDERR
+# include <stdio.h>
+#endif
+
+static gboolean
+save(GeglBuffer          *input,
+     const GeglRectangle *roi,
+     gchar *filename)
+{
+  GeglNode   *graph;
+  GeglNode   *source;
+  GeglNode   *writer;
+
+  graph  = gegl_node_new ();
+
+  source = gegl_node_new_child(graph,
+      "operation", "gegl:buffer-source",
+      "buffer", input,
+      NULL);
+
+  writer = gegl_node_new_child(graph,
+      "operation", "gegl:png-save",
+      "path", filename,
+      NULL);
+
+  gegl_node_link_many(source, writer, NULL);
+  gegl_node_process(writer);
+  g_object_unref(graph);
+  return TRUE; /* how do we know if it worked? */
+}
+
+static void
+load(gchar *filename, GeglBuffer **into)
+{
+  GeglNode   *graph = gegl_node_new();
+  GeglNode   *src   = gegl_node_new_child(graph,
+      "operation", "gegl:load",
+      "path", filename,
+      NULL);
+  GeglNode   *sink  = gegl_node_new_child (graph,
+                               "operation", "gegl:write-buffer",
+                               "buffer", *into,
+                                NULL);
+  gegl_node_link_many (src, sink, NULL);
+
+  gegl_node_process (sink);
+  g_object_unref (graph);
+}
+
+static gboolean
+process (GeglOperation       *operation,
+         GeglBuffer          *input,
+         GeglBuffer          *output,
+         const GeglRectangle *roi,
+         gint                 level)
+{
+  GeglProperties *o = GEGL_PROPERTIES(operation);
+  /*
+  GeglOperationAreaFilter *op_area   = GEGL_OPERATION_AREA_FILTER (operation);
+  const Babl *format = gegl_operation_get_format (operation, "output");
+  */
+
+  if (o->pipeline) {
+      if (o->path_in) {
+	gchar *path = o->path_in;
+	  if (! save(input, roi, path)) {
+	    fprintf(stderr, "save failed to %s\n", path);
+	    return FALSE;
+	  }
+      }
+      system(o->pipeline);
+
+      if (o->path_out) {
+	/* not sure if i need to copy the output buffer instead? probably */
+	load(o->path_out, &output);
+      }
+  } else {
+    // fprintf(stderr, "process with no pieline ignored\n");
+  }
+
+  return TRUE;
+}
+
+static GeglRectangle
+get_bounding_box (GeglOperation *operation)
+{
+  GeglRectangle  result = {0,0,1,4};
+  GeglRectangle *in_rect;
+
+  in_rect = gegl_operation_source_get_bounding_box (operation, "input");
+
+  if (in_rect) {
+    result = *in_rect;
+  } else {
+    // fprintf(stderr, "spawn: get_bounding_box() with null input\n");
+  }
+  
+  return result;
+} 
+
+static void
+prepare(GeglOperation *operation)
+{
+  const Babl *space   = gegl_operation_get_source_space (operation, "input");
+
+ gegl_operation_set_format (operation, "input", babl_format_with_space ("RGBA float", space));
+  gegl_operation_set_format (operation, "output", babl_format_with_space ("RGBA float", space));
+}
+
+static void
+gegl_op_class_init (GeglOpClass *klass)
+{
+  GeglOperationClass *operation_class;
+  GeglOperationFilterClass *filter_class;
+
+  operation_class = GEGL_OPERATION_CLASS (klass);
+  filter_class = GEGL_OPERATION_FILTER_CLASS (klass);
+
+  filter_class->process = process;
+  operation_class->prepare = prepare;
+  operation_class->threaded = FALSE;
+  operation_class->get_bounding_box = get_bounding_box;
+
+  gegl_operation_class_set_keys (operation_class,
+    "name",        "boy:spawn",
+    "title",       _("Run a system command"),
+    "categories",  "generic",
+    "license",     "GPL3+",
+    "description", _("Run a system command using bash. Caution: make sure you trust the command."),
+    NULL);
+}
+
+
+#endif
+@
+
+
+1.3
+log
+@first version that works
+@
+text
+@a59 5
+  fprintf(stderr, "save to %s\n", filename);
+  if (roi) {
+    fprintf(stderr, "roi %d %d %d %d\n", roi->x, roi->y, roi->width, roi->height);
+  }
+
+a60 1
+  fprintf(stderr, "graph %p\n", graph);
+a65 1
+  fprintf(stderr, "source %p\n", source);
+a70 1
+  fprintf(stderr, "writer %p\n", writer);
+a72 1
+  fprintf(stderr, "lunked\n");
+a74 1
+  fprintf(stderr, "save done to %s\n", filename);
+a108 1
+  fprintf(stderr, "process at level %d at line %d\n", level, __LINE__);
+a111 1
+	fprintf(stderr, "calling save for %s\n", path);
+a116 1
+      fprintf(stderr, "running pipeline %s\n", o->pipeline);
+d124 1
+a124 1
+    fprintf(stderr, "process with no pieline ignored\n");
+a135 1
+  fprintf(stderr, "bbox\n");
+a139 1
+    fprintf(stderr, "%d %d %d %d", in_rect->x, in_rect->y, in_rect->width, in_rect->height);
+d141 1
+a141 1
+    fprintf(stderr, "spawn: get_bounding_box() with null input\n");
+@
+
+
+1.2
+log
+@runs pipeline but doesn't provide it image data yet
+@
+text
+@d42 1
+a42 1
+#define GEGL_OP_META
+d51 13
+a63 7
+typedef struct {
+   guchar *we_write_this;
+   guchar *we_read_this;
+   int child_stdout;
+   int child_stdin;
+   gint process_id;
+} savedData_t;
+d65 2
+a66 16
+static void destroyData(savedData_t *savedData)
+{
+   if (!savedData) return;
+
+   if (savedData->we_write_this) {
+      g_free(savedData->we_write_this);
+      savedData->we_write_this = NULL;
+   }
+   if (savedData->we_read_this) {
+      g_free(savedData->we_read_this);
+      savedData->we_write_this = NULL;
+   }
+   savedData->child_stdout = 0;
+   savedData->child_stdin = 0;
+   savedData->process_id = 0;
+}
+d68 18
+a85 22
+static void
+attach (GeglOperation *operation)
+{
+   GeglNode *gegl = operation->node;
+   GeglNode *input = gegl_node_get_input_proxy (gegl, "input");
+   GeglNode *output = gegl_node_get_output_proxy (gegl, "output");
+   GeglNode *nop;
+   GeglProperties *o = GEGL_PROPERTIES(operation);
+
+   nop = gegl_node_new_child(gegl, "operation", "gegl:invert", NULL);
+   if (!nop) {
+       fprintf(stderr, "nop not found\n");
+       return;
+   }
+   gegl_node_link_many(input, nop, output, NULL);
+
+   savedData_t *savedData = NULL;
+   if (!o->user_data) {
+      o->user_data = savedData = g_new0(savedData_t, 1);
+      /*FIXME check we had enough memory */
+   }
+   fprintf(stderr, "about to attach %s\n", o->pipeline ? o->pipeline : "NULL");
+d89 1
+a89 1
+update_graph (GeglOperation *operation)
+d91 10
+a100 12
+   /* called if properties change. */
+   GeglProperties *o = GEGL_PROPERTIES (operation);
+   savedData_t *savedData = o->user_data;
+
+   fprintf(stderr, "update graph with %s\n", o->pipeline ? o->pipeline : "NULL");
+
+   if (o->user_data) {
+      destroyData(o->user_data);
+      g_free(o->user_data);
+      o->user_data = NULL;
+   }
+   o->user_data = savedData = g_new0(savedData_t, 1);
+d102 2
+a103 2
+   savedData->we_write_this = g_strdup(o->path_in);
+   savedData->we_read_this =  g_strdup(o->path_out);
+a105 16
+/*
+‘gboolean (*)(GeglOperation *, GeglOperationContext *, const gchar *, const GeglRectangle *, gint)’
+{aka ‘int (*)(struct _GeglOperation *, struct _GeglOperationContext *, const char *, const struct _GeglRectangle *, int)’}
+
+from incompatible pointer type
+‘gboolean (*)(GeglOperation *, GeglBuffer *, GeglBuffer *, glong,  const GeglRectangle *, gint)’ {aka ‘int (*)(struct _GeglOperation *, struct _GeglBuffer *, struct _GeglBuffer *, long int,  const struct _GeglRectangle *, int)’} [-Wincompatible-pointer-types]
+
+*/
+
+static void writeppmraw16(
+	guchar *filename,
+	GeglBuffer *input,
+        const GeglRectangle *rect,
+        gint level
+); /* see operations/external/ppm-save.c */
+
+d107 3
+a109 4
+process (GeglOperation       *self,
+         GeglBuffer                *input,
+         GeglBuffer                *output,
+         glong                samples,
+d113 5
+a117 3
+  const Babl *format = gegl_operation_get_format (self, "output");
+  int components = babl_format_get_n_components (format);
+  GeglProperties *o = GEGL_PROPERTIES(self);
+d119 1
+a119 1
+  fprintf(stderr, "process %d\n", __LINE__);
+d121 9
+a129 1
+      fprintf(stderr, "pipeline %s\n", o->pipeline);
+d131 7
+d146 1
+d149 1
+d152 5
+a156 3
+  if (! in_rect) {
+      fprintf(stderr, "nope\n");
+    return *GEGL_RECTANGLE (0, 0, 0, 0); 
+d159 1
+a159 2
+  fprintf(stderr, "%d %d %d %d", in_rect->x, in_rect->y, in_rect->width, in_rect->height);
+  return *in_rect;
+d162 8
+d175 1
+d178 1
+a178 1
+  GeglOperationFilterClass *operation_meta_class = GEGL_OPERATION_FILTER_CLASS (klass);
+d180 3
+a182 5
+  operation_class->attach = attach;
+  operation_class->process = process;
+  /*
+  operation_class->update = update_graph;
+  */
+a183 1
+  operation_meta_class->process = process;
+d188 2
+a189 1
+    "categories",  "output",
+a194 131
+typedef enum {
+  PIXMAP_ASCII  = 51,
+  PIXMAP_RAW    = 54,
+} map_type;
+
+static void
+ppm_save_write(FILE    *fp,
+               gint     width,
+               gint     height,
+               gsize    numsamples,
+               gsize    bpc,
+               guchar  *data,
+               map_type type)
+{
+  guint i;
+
+  /* Write the header */
+  fprintf (fp, "P%c\n%d %d\n", type, width, height );
+  fprintf (fp, "%d\n", (bpc == sizeof (guchar)) ? 255 : 65535);
+
+  /* Raw images writes the data in binary form */
+  if (type == PIXMAP_RAW)
+    {
+      /* Fix endianness if necessary */
+      if (bpc > 1)
+        {
+          gushort *ptr = (gushort *) data;
+
+          for (i = 0; i < numsamples; i++)
+            {
+              *ptr = GUINT16_TO_BE (*ptr);
+              ptr++;
+            }
+        }
+
+      fwrite (data, bpc, numsamples, fp);
+    }
+  else
+    {
+      /* Plain PPM format */
+
+      if (bpc == sizeof (guchar))
+        {
+          guchar *ptr = data;
+
+          for (i = 0; i < numsamples; i++)
+            {
+              fprintf (fp, "%u ", (unsigned int) *ptr++);
+              if ((i + 1) % (width * CHANNEL_COUNT) == 0)
+                fprintf (fp, "\n");
+            }
+        }
+      else if (bpc == sizeof (gushort))
+        {
+          gushort *ptr = (gushort *) data;
+
+          for (i = 0; i < numsamples; i++)
+            {
+              fprintf (fp, "%u ", (unsigned int) *ptr++);
+              if ((i + 1) % (width * CHANNEL_COUNT) == 0)
+                fprintf (fp, "\n");
+            }
+        }
+      else
+        {
+          g_warning ("%s: Programmer stupidity error", G_STRLOC);
+        }
+    }
+}
+
+static void writeppmraw16(
+	guchar *filename,
+	GeglBuffer *input,
+        const GeglRectangle *rect,
+        gint level
+) /* see operations/external/ppm-save.c */
+{
+  GeglProperties *o = GEGL_PROPERTIES (operation);
+
+  FILE     *fp;
+  guchar   *data;
+  map_type  type;
+  gsize     bpc;
+  gsize     numsamples;
+  gboolean  ret = FALSE;
+
+  fp = (!strcmp (o->path_out, "-") ? stdout : fopen(o->path, "wb") );
+
+  if (!fp)
+    return FALSE;
+
+  if ((o->bitdepth != 8) && (o->bitdepth != 16))
+    {
+      g_warning ("Bitdepths of 8 and 16 are only accepted currently.");
+      goto out;
+    }
+
+  type = (o->rawformat ? PIXMAP_RAW : PIXMAP_ASCII);
+  bpc = (o->bitdepth == 8) ? (sizeof (guchar)) : (sizeof (gushort));
+  numsamples = rect->width * rect->height * CHANNEL_COUNT;
+
+  data = g_malloc (numsamples * bpc);
+
+  switch (bpc)
+    {
+    case 1:
+      gegl_buffer_get (input, rect, 1.0, babl_format ("R'G'B' u8"), data,
+                       GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
+      break;
+
+    case 2:
+      gegl_buffer_get (input, rect, 1.0, babl_format ("R'G'B' u16"), data,
+                       GEGL_AUTO_ROWSTRIDE, GEGL_ABYSS_NONE);
+      break;
+
+    default:
+      g_warning ("%s: Programmer stupidity error", G_STRLOC);
+    }
+
+  ppm_save_write (fp, rect->width, rect->height, numsamples, bpc, data, type);
+
+  g_free (data);
+
+  ret = TRUE;
+
+ out:
+  if (fp != stdout)
+    fclose( fp );
+
+  return ret;
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d129 7
+d198 132
+@
