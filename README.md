@@ -72,7 +72,19 @@ BEAVER RECOMMENDS YOU USE A MODERN VERSION OF GEGL. NO GUARANTEE DATED VERSIONS 
 
 This plugin cannot work on Windows because it calls native Linux bash. Windows Sub System for Linux version may come soon but as of now it is not avalible. 
 
-## More previews of this based Plugin
+## Previews of Special GEGL Effects integration via
+
+https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/blob/main/AI_BASH_GEGL_EFFECTS_Linux_only_binaries_code.zip
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/ba62c04d-4b2c-4066-9400-af8acadd82ca)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/0659875c-25c7-4c18-86b4-59632ee7d977)
+
+![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/e2f59074-2926-42c2-8fde-a022cc1ccdc0)
+
+
+
+## More previews of this based Plugin (in stand alone mode)
 
 ![image](https://github.com/LinuxBeaver/AI_in_Gimp_by_GEGL_calling_bash/assets/78667207/caa43b3a-7c82-443c-b62f-5279e621c625)
 
