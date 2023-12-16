@@ -17,16 +17,18 @@ I shouldn't have to say this but it looks like Windows XP because of a Linux the
 
 0. You need the AI/whatever app installed on your machine and check to make sure said AI/whatever app works through bash.
 
-1. No matter what the bash string is GEGL is only programmed to export the current  layer as "/tmp/in.png"
-and call the final result "/tmp/out.png"
+1. The first command is always the bash string followed by optional GEGL syntax. The only way GEGL commands can come first is if users call the systems gegl outside of Gimp and that technically still is bash.
 
-2. Box 1 is for bash inputs such as 
+2. No matter what the bash string is GEGL is only programmed to export the current  layer as "/tmp/in.png"
+and call the final result "/tmp/out.png" so use those two lines in your bash string for the input and final output.
 
-3. The checkbox is to run the bash command; after it is ran it should be disabled quickly. Gimp will freeze and unfreeze if done correctly.
+3. Box 1 is for bash inputs such as **rembg /tmp/in.png -o /tmp/out.png**
 
-4. Box 2 is for optional GEGL syntax after a bash command
+4. The checkbox is to run the bash command; after it is ran it should be disabled quickly. Gimp will freeze and unfreeze if done correctly. If it isn't unchecked quickly it will take dozens of times longer to load.
 
-5. The previous /tmp/out.png image will load (if it exist there) and will only go away if the checkbox is checked/unchecked (to update it) or if the file is manually deleted.
+5. Box 2 is for optional GEGL syntax after a bash command. You don't have to put anything here if you don't write GEGL syntax.
+
+6. The previous /tmp/out.png image will load (if it exist there) and will only go away if the checkbox is checked/unchecked (to update it) or if the file is manually deleted. Just get use to the previous image loading on start up and know it will go away.
 
 
 ## Location to put binaries (they don't go in the normal plugins folder)
