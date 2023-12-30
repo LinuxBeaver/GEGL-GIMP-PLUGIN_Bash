@@ -64,7 +64,7 @@ property_string (bash, _("Insert Bash command that requires /tmp/out.png to be t
 
 
 #define bashwithanything \
-"rembg /tmp/in.png -o /tmp/out.png"
+"rembg i /tmp/in.png /tmp/out.png"
 
 property_boolean (bashtime, _("Run Bash Command (will freeze Gimp). Please disable this within seconds after enabling it. "), FALSE)
   description    (_("If done correct Gimp will freeze when this is checked. Then it is the users job to judge when they think the operation is done and uncheck this. Usually this happens instantly to a several seconds at most. But it will always be unique to the users machine specs and what bash command they run. After that select `load final output` in the drop down list. GMIC will be fast but an AI may take some time. If you don't (check, wait then uncheck) this the command, then it  will work but take dozens of times longer to load. You can tell how long it takes based on how long said bash command takes to input and output a file on your machine."))
