@@ -18,12 +18,12 @@
  * 2023 Beaver, GEGL Bash Buddy (lb:bash) - Modification of Liam's boy:spawn plugin to make it easier.
  */
 
-/* 
+/*
 Recreation in GEGL graph (requires Liam's bash plugin that it does ship with)
 
 
 boy:spawn path-in="/tmp/in.png" path-out="/tmp/out.png" pipeline="whatever bash string you want to put here"
-gegl-buffer-load        
+gegl-buffer-load
 id=1 clear aux=[ ref=1 ]
 layer src="/tmp/out.png"
 gegl:gegl string='whatever gegl command you want to put here'
@@ -40,24 +40,10 @@ property_file_path  (pathin, _("Temporary filename for pipeline to read"),  "/tm
     ui_meta     ("role", "output-extent")
 
 
-property_file_path  (pathout, _("Temporary filename for pipeline to create"), "/tmp/out.png") 
+property_file_path  (pathout, _("Temporary filename for pipeline to create"), "/tmp/out.png")
     ui_meta     ("role", "output-extent")
 
 
-enum_start (image_call_policy_meme)
-  enum_value (disableimage,      "noimage",
-              N_("Load nothing but GEGL syntax"))
-  enum_value (enableimage,      "previousimage",
-              N_("Load /tmp/out.png"))
-enum_end (imagecallpolicymeme)
-
-
-property_enum (imagecallpolicy, _("Switch to final output?"),
-    imagecallpolicymeme, image_call_policy_meme,
-    enableimage)
-    description (_("If this is enabled layer src= will always call  /tmp/out.png - If it is disabled it will not and only load GEGL syntax. Enabling this has advantages as you can run GEGL commands on the final bash output without reloading the bash checkbox each time. But it will also create a anomalous bug sometimes with GEGL Pixel Chunks and always load the previous file in /tmp/. The previous file being loaded is not a bug but the afromentioned thing is. By default this is enabled."))
-  ui_meta     ("sensitive", "! bashtime")
- 
 property_string (bash, _("Insert Bash command that requires /tmp/out.png to be the final output"), bashwithanything)
   description    (_("This is the same as running bash in a terminal so be careful. /tmp/in.png is the original layer exported and /tmp/out.png  is the final output that GEGL imports. You can do advance techniques like use GMIC to convert the png to another format then run GMIC on that said format before porting it back to /tmp/out.png for the best results on certain GMIC filters, but the final output will always be /tmp/out.png - that is the file GEGL is told to import. Consider using this plugin to call GMIC, Image Magick, AI's like REMBG, GFPGAN or literally any image modifying task that works through bash. "))
     ui_meta ("multiline", "true")
@@ -97,7 +83,7 @@ typedef struct
   GeglNode *geglwhatever;
 
   GeglNode *output;
-} State; 
+} State;
 
 static void attach (GeglOperation *operation)
 {
@@ -122,7 +108,7 @@ static void attach (GeglOperation *operation)
 
 
   state->geglwhatever    = gegl_node_new_child (gegl,
-                                  "operation", "gegl:gegl", 
+                                  "operation", "gegl:gegl",
                                   NULL);
 
 #define lastimport \
@@ -143,7 +129,7 @@ static void attach (GeglOperation *operation)
       gegl_operation_meta_redirect (operation, "geglsyntax", state->geglwhatever, "string");
 
 
-} 
+}
 
 static void update_graph (GeglOperation *operation)
 {
@@ -151,30 +137,19 @@ static void update_graph (GeglOperation *operation)
   State *state = o->user_data;
   if (!state) return;
 
-if (o->bashtime) 
+{
+if (o->bashtime)
 
 
-switch (o->imagecallpolicy) {
-        break;
-    case enableimage:
-    gegl_node_link_many (state->input, state->bash, state->layercall2, state->nop,  state->geglwhatever,  state->output, NULL);
-        break;
-    case disableimage:
-    gegl_node_link_many (state->input, state->bash, state->layercall2, state->nop,  state->geglwhatever,  state->output, NULL);
-    }
+    gegl_node_link_many (state->input, state->bash, state->layercall2, state->nop, state->output, NULL);
 
-else 
+else
 
-switch (o->imagecallpolicy) {
-        break;
-    case enableimage:
     gegl_node_link_many (state->input,  state->layercall, state->geglwhatever, state->output,  NULL);
-        break;
-    case disableimage:
-    gegl_node_link_many (state->input,  state->geglwhatever, state->output, NULL);
+
 }
     }
-      
+
 
 static void
 gegl_op_class_init (GeglOpClass *klass)
@@ -189,7 +164,7 @@ gegl_op_class_init (GeglOpClass *klass)
     "name",        "lb:bash",
     "title",       _("Bash Plugin"),
     "reference-hash", "235gmelaniemartinezismycutepsychogirlwaifu232344g3",
-    "description", _("To use input a image modifying bash string that involves  dirnames /tmp/in.png and /tmp/out.png , then enable the checkbox. Gimp will freeze if done correct. Wait for under a second to a few seconds  then uncheck the checkbox to see if your final output is done. If you don't uncheck and recheck the checkbox this filter will work but load dozens of times slower. "
+    "description", _("To use input a image modifying bash string that involves  dirnames /tmp/in.png and /tmp/out.png , then enable the checkbox. Gimp will freeze if done correct. Wait for under a second to a few seconds  then uncheck the checkbox to see if your final output is done. If you don't check and uncheck the checkbox this filter will work but load dozens of times slower. "
                      ""),
     "gimp:menu-path", "<Image>/Filters/Bash in GEGL/",
     "gimp:menu-label", _("GEGL Bash..."),
