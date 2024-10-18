@@ -18,12 +18,12 @@
  * 2023 Beaver, GEGL Bash Buddy (lb:bash) - Modification of Liam's boy:spawn plugin to make it easier.
  */
 
-/*
+/* 
 Recreation in GEGL graph (requires Liam's bash plugin that it does ship with)
 
 
 boy:spawn path-in="/tmp/in.png" path-out="/tmp/out.png" pipeline="whatever bash string you want to put here"
-gegl-buffer-load
+gegl-buffer-load        
 id=1 clear aux=[ ref=1 ]
 layer src="/tmp/out.png"
 gegl:gegl string='whatever gegl command you want to put here'
@@ -40,7 +40,7 @@ property_file_path  (pathin, _("Temporary filename for pipeline to read"),  "/tm
     ui_meta     ("role", "output-extent")
 
 
-property_file_path  (pathout, _("Temporary filename for pipeline to create"), "/tmp/out.png")
+property_file_path  (pathout, _("Temporary filename for pipeline to create"), "/tmp/out.png") 
     ui_meta     ("role", "output-extent")
 
 
@@ -78,12 +78,10 @@ typedef struct
   GeglNode *input;
   GeglNode *bash;
   GeglNode *layercall;
-  GeglNode *layercall2;
   GeglNode *nop;
   GeglNode *geglwhatever;
-
   GeglNode *output;
-} State;
+} State; 
 
 static void attach (GeglOperation *operation)
 {
@@ -108,18 +106,14 @@ static void attach (GeglOperation *operation)
 
 
   state->geglwhatever    = gegl_node_new_child (gegl,
-                                  "operation", "gegl:gegl",
+                                  "operation", "gegl:gegl", 
                                   NULL);
 
 #define lastimport \
-"  src aux=[ layer src='/tmp/out.png'  "
+"     src aux=[ load path='/tmp/out.png' id=1 crop aux=[ ref=1 ]  "
 
 
   state->layercall    = gegl_node_new_child (gegl,
-                                  "operation", "gegl:gegl", "string", lastimport,
-                                  NULL);
-
-  state->layercall2    = gegl_node_new_child (gegl,
                                   "operation", "gegl:gegl", "string", lastimport,
                                   NULL);
 
@@ -129,7 +123,7 @@ static void attach (GeglOperation *operation)
       gegl_operation_meta_redirect (operation, "geglsyntax", state->geglwhatever, "string");
 
 
-}
+} 
 
 static void update_graph (GeglOperation *operation)
 {
@@ -137,19 +131,16 @@ static void update_graph (GeglOperation *operation)
   State *state = o->user_data;
   if (!state) return;
 
+if (o->bashtime) 
 {
-if (o->bashtime)
-
-
-    gegl_node_link_many (state->input, state->bash, state->layercall2, state->nop, state->output, NULL);
-
-else
-
-    gegl_node_link_many (state->input,  state->layercall, state->geglwhatever, state->output,  NULL);
-
+    gegl_node_link_many (state->input, state->bash, state->layercall, state->nop,   state->output, NULL);
+    }
+else 
+{
+    gegl_node_link_many (state->input,  state->layercall, state->geglwhatever,  state->output, NULL);
 }
     }
-
+      
 
 static void
 gegl_op_class_init (GeglOpClass *klass)
