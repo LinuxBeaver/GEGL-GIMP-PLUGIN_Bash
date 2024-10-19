@@ -110,7 +110,7 @@ static void attach (GeglOperation *operation)
                                   NULL);
 
 #define lastimport \
-"     src aux=[ load path='/tmp/out.png' id=1 crop aux=[ ref=1 ]  "
+"     src aux=[ load path='/tmp/out.png' ] id=1 crop aux=[ ref=1 ]  "
 
 
   state->layercall    = gegl_node_new_child (gegl,
