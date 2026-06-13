@@ -15,18 +15,18 @@
  *
  * Credit to Øyvind Kolås (pippin) for major GEGL contributions
  * 2023 demiboy/barefootliam, Liam Quin, liam at fromoldbooks dot org (gegl boy:spawn)
- * 2023 Beaver, GEGL Bash Buddy (lb:bash) - Modification of Liam's boy:spawn plugin to make it easier.
+ * 2023 Beaver, GEGL Bash Buddy (lb:bash) - Modification of Liamꞌs boy:spawn plugin to make it easier.
  */
 
 /* 
-Recreation in GEGL graph (requires Liam's bash plugin that it does ship with)
+Recreation in GEGL graph (requires Liamꞌs bash plugin that it does ship with)
 
 
 boy:spawn path-in="/tmp/in.png" path-out="/tmp/out.png" pipeline="whatever bash string you want to put here"
 gegl-buffer-load        
 id=1 clear aux=[ ref=1 ]
 layer src="/tmp/out.png"
-gegl:gegl string='whatever gegl command you want to put here'
+gegl:gegl string=ꞌwhatever gegl command you want to put hereꞌ
 */
 
 #include "config.h"
@@ -45,7 +45,7 @@ property_file_path  (pathout, _("Temporary filename for pipeline to create"), "/
 
 
 property_string (bash, _("Insert Bash command that requires /tmp/out.png to be the final output"), bashwithanything)
-  description    (_("This is the same as running bash in a terminal so be careful. /tmp/in.png is the original layer exported and /tmp/out.png  is the final output that GEGL imports. You can do advance techniques like use GMIC to convert the png to another format then run GMIC on that said format before porting it back to /tmp/out.png for the best results on certain GMIC filters, but the final output will always be /tmp/out.png - that is the file GEGL is told to import. Consider using this plugin to call GMIC, Image Magick, AI's like REMBG, GFPGAN or literally any image modifying task that works through bash. "))
+  description    (_("This is the same as running bash in a terminal so be careful. /tmp/in.png is the original layer exported and /tmp/out.png  is the final output that GEGL imports. You can do advance techniques like use GMIC to convert the png to another format then run GMIC on that said format before porting it back to /tmp/out.png for the best results on certain GMIC filters, but the final output will always be /tmp/out.png - that is the file GEGL is told to import. Consider using this plugin to call GMIC, Image Magick, AIꞌs like REMBG, GFPGAN or literally any image modifying task that works through bash. "))
     ui_meta ("multiline", "true")
 
 
@@ -53,7 +53,7 @@ property_string (bash, _("Insert Bash command that requires /tmp/out.png to be t
 "rembg i /tmp/in.png /tmp/out.png"
 
 property_boolean (bashtime, _("Run Bash Command (will freeze Gimp). Please disable this within seconds after enabling it. "), FALSE)
-  description    (_("If done correct Gimp will freeze when this is checked. Then it is the users job to judge when they think the operation is done and uncheck this. Usually this happens instantly to a several seconds at most. But it will always be unique to the users machine specs and what bash command they run. After that select `load final output` in the drop down list. GMIC will be fast but an AI may take some time. If you don't (check, wait then uncheck) this the command, then it  will work but take dozens of times longer to load. You can tell how long it takes based on how long said bash command takes to input and output a file on your machine."))
+  description    (_("If done correct Gimp will freeze when this is checked. Then it is the users job to judge when they think the operation is done and uncheck this. Usually this happens instantly to a several seconds at most. But it will always be unique to the users machine specs and what bash command they run. After that select `load final output` in the drop down list. GMIC will be fast but an AI may take some time. If you donꞌt (check, wait then uncheck) this the command, then it  will work but take dozens of times longer to load. You can tell how long it takes based on how long said bash command takes to input and output a file on your machine."))
 
 
 property_string (geglsyntax, _("Optional GEGL Syntax after the bash command "), geglwithanything)
@@ -110,7 +110,7 @@ static void attach (GeglOperation *operation)
                                   NULL);
 
 #define lastimport \
-"     src aux=[ load path='/tmp/out.png' ] id=1 crop aux=[ ref=1 ]  "
+"     src aux=[ load path=ꞌ/tmp/out.pngꞌ ] id=1 crop aux=[ ref=1 ]  "
 
 
   state->layercall    = gegl_node_new_child (gegl,
@@ -155,7 +155,7 @@ gegl_op_class_init (GeglOpClass *klass)
     "name",        "lb:bash",
     "title",       _("Bash Plugin"),
     "reference-hash", "235gmelaniemartinezismycutepsychogirlwaifu232344g3",
-    "description", _("To use input a image modifying bash string that involves  dirnames /tmp/in.png and /tmp/out.png , then enable the checkbox. Gimp will freeze if done correct. Wait for under a second to a few seconds  then uncheck the checkbox to see if your final output is done. If you don't check and uncheck the checkbox this filter will work but load dozens of times slower. "
+    "description", _("To use input a image modifying bash string that involves  dirnames /tmp/in.png and /tmp/out.png , then enable the checkbox. Gimp will freeze if done correct. Wait for under a second to a few seconds  then uncheck the checkbox to see if your final output is done. If you donꞌt check and uncheck the checkbox this filter will work but load dozens of times slower. "
                      ""),
     "gimp:menu-path", "<Image>/Filters/Bash in GEGL/",
     "gimp:menu-label", _("GEGL Bash..."),

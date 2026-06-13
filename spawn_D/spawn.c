@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with GEGL; if not, see <https://www.gnu.org/licenses/>.
  *
- * Credit to Øyvind Kolås (pippin) for major GEGL contributions
+ * Copyright 2006 Øyvind Kolås <pippin@gimp.org>
  * 2023 demiboy/barefootliam, Liam Quin, liam at fromoldbooks dot org
  */
 
